@@ -3,8 +3,8 @@
 CC:= clang++
 
 CFLAGS = -std=c++17 -Wno-deprecated-enum-enum-conversion -O2
-# CFLAGS += `pkg-config --cflags opencv4` 
-# LDFLAGS = `pkg-config --libs opencv4`
+CFLAGS += `pkg-config --cflags opencv4`
+LDFLAGS = `pkg-config --libs opencv4`
 
 
 SOURCES := $(wildcard *.cpp)
