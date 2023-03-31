@@ -1,49 +1,6 @@
 #include <iostream>
-#include "../Header/matrix.h"
-#include "../Header/rotmat.h"
-#include <math.h>
-#include <sstream>
 #include <string>
-
-void setMatrixValues(Matrix *m, std::vector<double> v)
-{
-    for (int r = 0; r < m->getRows(); r++)
-    {
-        for (int c = 0; c < m->getCols(); c++)
-        {
-            m->at(r, c) = v[r * m->getCols() + c];
-        }
-    }
-}
-
-std::string mat2str(Matrix m)
-{
-    std::stringstream ss;
-    for (int r = 0; r < m.getRows(); r++)
-    {
-        for (int c = 0; c < m.getCols(); c++)
-        {
-            ss << m(r, c);
-            if (c < m.getCols() - 1)
-            {
-                ss << " ";
-            }
-        }
-        ss << ";";
-        if (r < m.getRows() - 1)
-        {
-            ss << " ";
-        }
-    }
-    return ss.str();
-}
-
-void test(Matrix test, std::string target, std::string msg)
-{
-    std::string mStr = mat2str(test);
-    std::string equal = mStr == target ? "Success: " : "Failed:  ";
-    std::cout << equal << msg << "\t " << mStr << " " << target << std::endl;
-}
+#include "../Header/date.h"
 
 template <class T1>
 void test(T1 test, T1 target, std::string msg)
@@ -52,65 +9,77 @@ void test(T1 test, T1 target, std::string msg)
     std::cout << equal << msg << "\t " << test << " " << target << std::endl;
 }
 
-int main()
+int main(int argc, char **argv)
 {
-    // Construction and index access
-    Matrix mat(3, 4);
-    test(mat, "0 0 0 0; 0 0 0 0; 0 0 0 0;", "simple constructor");
-    Matrix mat2(3, 4, 3);
-    test<double>(mat2.at(0, 0), 3, "at method");
-    test<double>(mat2(2, 3), 3, "() operator");
+    Date date(20210201); // 2020 feb 1st
+    test<int>(date.getYear(), 2021, "date.getYear()");
+    test<int>(date.getMonth(), 2, "date.getMonth()");
+    test<int>(date.getDay(), 1, "date.getDay()");
 
-    // Transpose
-    setMatrixValues(&mat, std::vector<double>{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11});
-    Matrix mat3 = mat; // Make a copy of mat
-    test(mat3, "0 1 2 3; 4 5 6 7; 8 9 10 11;", "creation of mat3");
-    mat3.transpose();
-    test(mat3, "0 4 8; 1 5 9; 2 6 10; 3 7 11;", "transpose()");
+    std::cout << std::endl;
 
-    // Addition
-    Matrix mat4(4, 3);
-    setMatrixValues(&mat4, std::vector<double>{0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4});
-    test(mat4, "0 0 1; 1 1 2; 2 2 3; 3 3 4;", "Creation of mat4");
-    Matrix mat5 = mat3.add(mat4);
-    test(mat5, "0 4 9; 2 6 11; 4 8 13; 6 10 15;", "add()");
-    Matrix mat6 = mat4 + mat3;
-    test(mat6, "0 4 9; 2 6 11; 4 8 13; 6 10 15;", "+ operator");
+    Date y1900(19000101);
+    Date y2000(20000101);
+    Date y2004(20040101);
+    Date y2005(20050101);
+    test<bool>(y1900.isLeapYear(), false, "y1900.isLeapYear()");
+    test<bool>(y2000.isLeapYear(), true, "y2000.isLeapYear()");
+    test<bool>(y2004.isLeapYear(), true, "y2004.isLeapYear()");
+    test<bool>(y2005.isLeapYear(), false, "y2005.isLeapYear()");
 
-    // Inner product
-    test(Matrix(1, 3, 2) * Matrix(3, 1, 2), "12;", "inner product");
+    std::cout << std::endl;
 
-    // outer product
-    test(Matrix(3, 1, 2) * Matrix(1, 3, 2), "4 4 4; 4 4 4; 4 4 4;", "outer product");
+    Date jun12_2020(20200612);
+    Date jun12_2021(20210612);
+    Date jan01_2021(20210101);
+    Date dec31_2020(20201231);
+    Date dec31_2021(20211231);
 
-    // Multiplication
-    mat4.transpose();
-    Matrix mat7 = mat4.multiply(mat6);
-    Matrix mat8 = mat6 * mat4;
-    test(mat7, "28 52 82; 28 52 82; 40 80 130;", "multiply() (matrix multiplication");
-    test(mat8, "9 22 35 48; 11 30 49 68; 13 38 63 88; 15 46 77 108;", "* operator (matrix multiplication)");
-    Matrix mat9 = mat8 * 0.5;
-    test(mat9, "4.5 11 17.5 24; 5.5 15 24.5 34; 6.5 19 31.5 44; 7.5 23 38.5 54;", "* operator (scalar multiplication)");
+    test<int>(jun12_2020.dayOfTheYear(), 164, "jun12_2020.dayOfTheYear()");
+    test<int>(jun12_2021.dayOfTheYear(), 163, "jun12_2021.dayOfTheYear()");
+    test<int>(jan01_2021.dayOfTheYear(), 1, "jan01_2021.dayOfTheYear()");
+    test<int>(dec31_2020.dayOfTheYear(), 366, "dec31_2020.dayOfTheYear()");
+    test<int>(dec31_2021.dayOfTheYear(), 365, "dec31_2021.dayOfTheYear()");
 
-    // Rotation matrices
-    RotMat2D identity;
-    test(identity, "1 0; 0 1;", "Identity");
-    RotMat2D ninety(M_PI / 2);
-    test(ninety, "6.12323e-17 -1; 1 6.12323e-17;", "ninety");
-    ninety.transpose();
-    test(ninety, "6.12323e-17 1; -1 6.12323e-17;", "ninety trasposed");
-    RotMat2D thirty(30 * M_PI / 180);
-    test(thirty, "0.866025 -0.5; 0.5 0.866025;", "thirty");
-    RotMat2D sixty(60 * M_PI / 180);
-    test(sixty, "0.5 -0.866025; 0.866025 0.5;", "sixty");
-    Matrix allThree = thirty * sixty;
-    test(allThree, "2.22045e-16 -1; 1 2.22045e-16;", "thirty*sixty");
-    allThree = allThree * ninety;
-    test(allThree, "1 1.60812e-16; -1.60812e-16 1;", "thirty*sixty* ninety (ninety is transposed)");
+    std::cout << std::endl;
 
-    // Rotate v by thirty degrees
-    Matrix v(2, 1, 0);
-    v(0, 0) = 2;
-    v(1, 0) = 3;
-    test(thirty * v, "0.232051; 3.59808;", "Rotation of vector using rotation matrix");
+    Date d1(20000229);  // no  warning
+    Date d2(20010229);  //  warning
+    Date d3(16532356);  //  warning
+    Date d4(20331121);  // no  warning
+    Date d5(123456789); // no  warning
+
+    test<int>(d1.getYear() * 10000 + d1.getMonth() * 100 + d1.getDay(), 20000229, "test constructor");
+    test<int>(d2.getYear() * 10000 + d2.getMonth() * 100 + d2.getDay(), 17000301, "test constructor"); // invalid input date. Set to 17000301
+    test<int>(d3.getYear() * 10000 + d3.getMonth() * 100 + d3.getDay(), 17000301, "test constructor"); // invalid input date. Set to 17000301
+    test<int>(d4.getYear() * 10000 + d4.getMonth() * 100 + d4.getDay(), 20331121, "test constructor");
+    test<int>(d5.getYear() * 10000 + d5.getMonth() * 100 + d5.getDay(), 17000301, "test constructor"); // invalid input date. Set to 17000301
+    std::cout << std::endl;
+
+    Date oneDay(20210127);
+    test<int>(oneDay.differenceInDays(Date(20210203)), 7, "oneDay.differenceInDays(Date(20210203))");
+    test<int>(oneDay.differenceInDays(Date(20210201)), 5, "oneDay.differenceInDays(Date(20210201))");
+    test<int>(oneDay.differenceInDays(Date(20220201)), 370, "oneDay.differenceInDays(Date(20220201))");
+
+    std::cout << std::endl;
+
+    Date da(20210202);
+    Date db(20210305);
+    Date dc(17000301);
+    test<int>(da.weekday(), 2, "da.weekday()");
+    test<int>(db.weekday(), 5, "db.weekday()");
+    test<int>(dc.weekday(), 1, "dc.weekday()");
+    test<std::string>(da.weekdayAsText(da.weekday()), "tue", "da.weekdayAsTexty()");
+    test<std::string>(db.weekdayAsText(db.weekday()), "fri", "db.weekdayAsTexty()");
+    test<std::string>(dc.weekdayAsText(dc.weekday()), "mon", "dc.weekdayAsTexty()");
+
+    std::cout << std::endl;
+
+    Date startDate(20201229);
+    /* Correctly prints the dates 29,30,31 dec 2020 and 1,2,3,4 jan 2021 */
+    for (int i = 0; i < 7; i++)
+    {
+        startDate.print();
+        startDate.incrementDate();
+    }
 }
