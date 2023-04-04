@@ -1,9 +1,9 @@
 // stdlib
+#include <cmath>
+#include <iomanip>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <cmath>
-#include <iomanip>
 #include <vector>
 
 // Opencv
@@ -14,8 +14,7 @@
 // User headers
 #include "../Header/clock.h"
 
-int main()
-{
+int main() {
   int height = 600;
   int width = 800;
   float dt = 0.001;
